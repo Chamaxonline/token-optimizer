@@ -1,0 +1,27 @@
+{
+  "name": "@token-opt/cli",
+  "version": "0.1.0",
+  "description": "CLI for scanning and reporting token usage in AI coding tools",
+  "type": "module",
+  "bin": {
+    "token-opt": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@token-opt/core": "workspace:*",
+    "commander": "^13.1.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
+  }
+}
