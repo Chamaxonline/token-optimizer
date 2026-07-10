@@ -1,0 +1,20 @@
+{
+  "name": "@token-opt/cursor-hooks",
+  "version": "0.1.0",
+  "description": "Cursor hook handlers for token-optimizer",
+  "type": "module",
+  "files": ["dist", "hooks.json"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@token-opt/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
+  }
+}
