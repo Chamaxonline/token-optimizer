@@ -1,7 +1,7 @@
 {
   "name": "token-optimizer",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Local CLI to scan and optimize token usage in Cursor and Claude Code",
   "scripts": {
     "build": "pnpm -r build",

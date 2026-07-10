@@ -48,6 +48,7 @@ export function buildSessionReport(
   const endedAt = events.find((e) => e.type === "session_end")?.timestamp ?? null;
 
   const toolEvents = events.filter((e) => e.type === "tool_use");
+  const policyWarnings = events.filter((e) => e.type === "policy_warning");
   const readPaths = new Map<string, number>();
 
   let toolOutputs = 0;
@@ -93,6 +94,20 @@ export function buildSessionReport(
       detail,
       tokens,
       flag,
+      timestamp: event.timestamp,
+    });
+  }
+
+  for (const event of policyWarnings) {
+    warnCount += 1;
+    if (event.metadata?.flag === "duplicate") {
+      duplicateReads += 1;
+    }
+    offenders.push({
+      tool: event.tool ?? "policy",
+      detail: event.detail ?? "",
+      tokens: 0,
+      flag: event.metadata?.flag as TopOffender["flag"] | undefined,
       timestamp: event.timestamp,
     });
   }

@@ -7,6 +7,7 @@ export {
   ensureStorageDirs,
   getSessionsDir,
   getSummariesDir,
+  getStateDir,
   DEFAULT_CONFIG,
 } from "./config.js";
 export {
@@ -24,8 +25,25 @@ export {
   extractToolName,
   extractToolOutput,
   extractToolInput,
+  extractWorkspaceRoot,
   evaluateToolOutput,
+  policyToHookPermission,
 } from "./hook-utils.js";
+export {
+  evaluateToolOutputPolicy,
+  evaluateDuplicateReadPolicy,
+  evaluatePromptPolicy,
+  extractReadPath,
+  extractPromptText,
+  findPromptFileReferences,
+  findLargeFilesInPrompt,
+  countFileLines,
+} from "./policy-engine.js";
+export {
+  recordRead,
+  checkDuplicateRead,
+  clearSessionState,
+} from "./read-tracker.js";
 export type {
   ScanCategory,
   ScanOptions,
@@ -36,6 +54,8 @@ export type {
 export type {
   TokenOptConfig,
   PolicyMode,
+  PolicyAction,
+  PolicyResult,
   SessionEvent,
   SessionEventType,
   SessionReport,

@@ -1,5 +1,19 @@
 export type PolicyMode = "warn" | "enforce";
 
+export type PolicyAction = "allow" | "warn" | "truncate" | "deny";
+
+export interface PolicyResult {
+  action: PolicyAction;
+  message?: string;
+  userMessage?: string;
+  agentMessage?: string;
+  outputChars?: number;
+  estimatedTokens?: number;
+  estimatedTokensSaved?: number;
+  truncatedOutput?: string;
+  flag?: "over_budget" | "duplicate" | "large_file" | "large_output";
+}
+
 export interface TokenOptConfig {
   version: number;
   budgets: {
@@ -7,6 +21,7 @@ export interface TokenOptConfig {
     grep_max_lines: number;
     mcp_output_chars: number;
     duplicate_read_ttl_sec: number;
+    prompt_max_file_lines: number;
   };
   behavior: {
     mode: PolicyMode;
@@ -22,7 +37,8 @@ export type SessionEventType =
   | "session_start"
   | "session_end"
   | "tool_use"
-  | "pre_compact";
+  | "pre_compact"
+  | "policy_warning";
 
 export interface SessionEvent {
   type: SessionEventType;

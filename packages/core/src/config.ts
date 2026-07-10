@@ -13,6 +13,7 @@ const configSchema = z.object({
       grep_max_lines: z.number().default(200),
       mcp_output_chars: z.number().default(16000),
       duplicate_read_ttl_sec: z.number().default(600),
+      prompt_max_file_lines: z.number().default(500),
     })
     .default({}),
   behavior: z
@@ -36,6 +37,7 @@ export const DEFAULT_CONFIG: TokenOptConfig = {
     grep_max_lines: 200,
     mcp_output_chars: 16000,
     duplicate_read_ttl_sec: 600,
+    prompt_max_file_lines: 500,
   },
   behavior: {
     mode: "warn",
@@ -96,7 +98,12 @@ export function getSummariesDir(config: TokenOptConfig): string {
   return join(expandHome(config.storage.dir), "summaries");
 }
 
+export function getStateDir(config: TokenOptConfig): string {
+  return join(expandHome(config.storage.dir), "state");
+}
+
 export async function ensureStorageDirs(config: TokenOptConfig): Promise<void> {
   await mkdir(getSessionsDir(config), { recursive: true });
   await mkdir(getSummariesDir(config), { recursive: true });
+  await mkdir(getStateDir(config), { recursive: true });
 }

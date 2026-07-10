@@ -9,7 +9,7 @@ const program = new Command();
 program
   .name("token-opt")
   .description("Scan and optimize token usage for Cursor and Claude Code")
-  .version("0.2.0");
+  .version("0.3.0");
 
 program
   .command("scan")

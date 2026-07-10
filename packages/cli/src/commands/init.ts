@@ -7,6 +7,8 @@ const HOOK_FILES = [
   "session-start.js",
   "session-end.js",
   "post-tool-use.js",
+  "pre-tool-use-read.js",
+  "before-submit-prompt.js",
   "pre-compact.js",
 ];
 
