@@ -6,6 +6,7 @@ Local CLI to scan and optimize token usage when using **Cursor** and **Claude Co
 
 - **v0.1 — PR #1:** Static scanner (`token-opt scan`)
 - **v0.2 — PR #2:** Session hooks + event store + `token-opt report`
+- **v0.3 — PR #3:** Warn policies + duplicate-read detection
 
 ## Requirements
 
@@ -48,7 +49,9 @@ Cursor hooks (installed via `token-opt init`) log to `~/.token-optimizer/`:
 | Event | Hook | Logged data |
 |-------|------|-------------|
 | Session start | `sessionStart` | workspace, timestamp |
-| Tool use | `postToolUse` | tool name, output size, token estimate |
+| Tool use | `postToolUse` | tool name, output size, budget warnings |
+| Duplicate read | `preToolUse` (Read) | warns when same file read within TTL |
+| Large files in prompt | `beforeSubmitPrompt` | warns on @-references to files >500 lines |
 | Context compaction | `preCompact` | compaction events |
 | Session end | `sessionEnd` | summary report |
 
@@ -67,7 +70,7 @@ packages/
 
 - [x] PR #1: `token-opt scan`
 - [x] PR #2: Session hooks + `token-opt report`
-- [ ] PR #3: Warn policies + duplicate-read detection
+- [x] PR #3: Warn policies + duplicate-read detection
 - [ ] PR #4: Enforce mode + Claude hooks
 
 ## License

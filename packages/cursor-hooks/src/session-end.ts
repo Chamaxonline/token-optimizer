@@ -1,4 +1,4 @@
-import { appendSessionEvent, extractSessionId, finalizeSession } from "@token-opt/core/session";
+import { appendSessionEvent, extractSessionId, finalizeSession, clearSessionState } from "@token-opt/core/session";
 import { runHook } from "./lib/hook-io.js";
 
 await runHook(async (input) => {
@@ -10,6 +10,7 @@ await runHook(async (input) => {
   });
 
   await finalizeSession(sessionId);
+  await clearSessionState(sessionId);
 
   return {};
 });

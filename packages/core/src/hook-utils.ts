@@ -1,5 +1,5 @@
-import { estimateTokens } from "./tokenizer.js";
 import type { TokenOptConfig } from "./session-types.js";
+import { evaluateToolOutputPolicy } from "./policy-engine.js";
 
 export function readHookField(
   input: Record<string, unknown>,
@@ -58,29 +58,35 @@ export function extractToolInput(input: Record<string, unknown>): unknown {
   );
 }
 
+export function extractWorkspaceRoot(input: Record<string, unknown>): string {
+  const root = readHookField(input, [
+    "workspace",
+    "workspace_root",
+    "workspaceRoot",
+    "cwd",
+    "project_path",
+    "projectPath",
+  ]);
+  return root ?? process.cwd();
+}
+
+/** @deprecated Use evaluateToolOutputPolicy from policy-engine */
 export function evaluateToolOutput(
   tool: string,
   output: string,
   config: TokenOptConfig,
 ): { outputChars: number; estimatedTokens: number; warning?: string } {
-  const outputChars = output.length;
-  const estimatedTokens = estimateTokens(output);
-  const toolLower = tool.toLowerCase();
+  const result = evaluateToolOutputPolicy(tool, output, config);
+  return {
+    outputChars: result.outputChars ?? output.length,
+    estimatedTokens: result.estimatedTokens ?? 0,
+    warning: result.action === "warn" || result.action === "truncate" ? result.message : undefined,
+  };
+}
 
-  let budget = config.budgets.shell_output_chars;
-  if (toolLower.includes("grep")) {
-    budget = config.budgets.grep_max_lines * 80;
-  } else if (toolLower.includes("mcp")) {
-    budget = config.budgets.mcp_output_chars;
-  }
-
-  if (outputChars > budget && config.behavior.mode === "warn") {
-    return {
-      outputChars,
-      estimatedTokens,
-      warning: `Output is ${outputChars} chars (~${estimatedTokens} tokens), over budget of ${budget}`,
-    };
-  }
-
-  return { outputChars, estimatedTokens };
+export function policyToHookPermission(
+  result: import("./session-types.js").PolicyResult,
+): "allow" | "deny" | "ask" {
+  if (result.action === "deny") return "deny";
+  return "allow";
 }
