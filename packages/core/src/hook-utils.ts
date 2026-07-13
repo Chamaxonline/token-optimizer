@@ -39,6 +39,13 @@ export function extractToolOutput(input: Record<string, unknown>): string {
   ]);
   if (direct) return direct;
 
+  // Claude Code PostToolUse uses tool_response
+  const toolResponse = input.tool_response ?? input.toolResponse;
+  if (typeof toolResponse === "string") return toolResponse;
+  if (toolResponse && typeof toolResponse === "object") {
+    return JSON.stringify(toolResponse);
+  }
+
   const output = input.output;
   if (typeof output === "string") return output;
   if (output && typeof output === "object") {
@@ -46,6 +53,14 @@ export function extractToolOutput(input: Record<string, unknown>): string {
   }
 
   return "";
+}
+
+/** Normalize Cursor Shell / Claude Bash / Grep / Read names for policy matching. */
+export function normalizeToolName(tool: string): string {
+  const lower = tool.toLowerCase();
+  if (lower === "bash" || lower === "shell") return "Shell";
+  if (lower.startsWith("mcp__") || lower.startsWith("mcp:")) return `MCP:${tool}`;
+  return tool;
 }
 
 export function extractToolInput(input: Record<string, unknown>): unknown {

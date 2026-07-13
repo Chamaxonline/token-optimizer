@@ -3,13 +3,14 @@ import { runScan } from "./commands/scan.js";
 import { runReport } from "./commands/report.js";
 import { runInit } from "./commands/init.js";
 import { runStatus, runDoctor } from "./commands/status.js";
+import { runConfigSetMode, runConfigShow } from "./commands/config.js";
 
 const program = new Command();
 
 program
   .name("token-opt")
   .description("Scan and optimize token usage for Cursor and Claude Code")
-  .version("0.3.0");
+  .version("0.4.0");
 
 program
   .command("scan")
@@ -61,11 +62,17 @@ program
 
 program
   .command("init")
-  .description("Install Cursor hooks and default config for session tracking")
+  .description("Install Cursor and/or Claude Code hooks plus default config")
   .option("-p, --path <dir>", "Project directory", process.cwd())
+  .option("--cursor", "Install Cursor hooks only")
+  .option("--claude", "Install Claude Code hooks only")
   .action(async (options) => {
     try {
-      await runInit({ path: options.path });
+      await runInit({
+        path: options.path,
+        cursor: options.cursor,
+        claude: options.claude,
+      });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       console.error(`token-opt init failed: ${message}`);
@@ -73,12 +80,50 @@ program
     }
   });
 
+const configCmd = program
+  .command("config")
+  .description("View or update token-opt configuration");
+
+configCmd
+  .command("show")
+  .description("Show current config values")
+  .action(async () => {
+    try {
+      await runConfigShow();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`token-opt config show failed: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
+configCmd
+  .command("set")
+  .description("Set a config value")
+  .argument("<key>", "Config key (currently: mode)")
+  .argument("<value>", "Value (for mode: warn | enforce)")
+  .action(async (key: string, value: string) => {
+    try {
+      if (key === "mode") {
+        await runConfigSetMode(value);
+        return;
+      }
+      console.error(`Unknown config key "${key}". Supported: mode`);
+      process.exitCode = 1;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`token-opt config set failed: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
 program
   .command("status")
   .description("Show token-opt config and hook status")
-  .action(async () => {
+  .option("-p, --path <dir>", "Project directory", process.cwd())
+  .action(async (options) => {
     try {
-      await runStatus();
+      await runStatus(options.path);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       console.error(`token-opt status failed: ${message}`);
@@ -89,8 +134,9 @@ program
 program
   .command("doctor")
   .description("Verify token-opt installation and configuration")
-  .action(async () => {
-    await runDoctor();
+  .option("-p, --path <dir>", "Project directory", process.cwd())
+  .action(async (options) => {
+    await runDoctor(options.path);
   });
 
 program.parseAsync(process.argv);

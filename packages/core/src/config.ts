@@ -102,8 +102,49 @@ export function getStateDir(config: TokenOptConfig): string {
   return join(expandHome(config.storage.dir), "state");
 }
 
+export function getArtifactsDir(config: TokenOptConfig): string {
+  return join(expandHome(config.storage.dir), "artifacts");
+}
+
 export async function ensureStorageDirs(config: TokenOptConfig): Promise<void> {
   await mkdir(getSessionsDir(config), { recursive: true });
   await mkdir(getSummariesDir(config), { recursive: true });
   await mkdir(getStateDir(config), { recursive: true });
+  await mkdir(getArtifactsDir(config), { recursive: true });
+}
+
+export async function saveConfig(
+  config: TokenOptConfig,
+  configPath?: string,
+): Promise<string> {
+  const path = configPath ?? getConfigPath(config);
+  const dir = join(path, "..");
+  await mkdir(dir, { recursive: true });
+  const toWrite: TokenOptConfig = {
+    ...config,
+    storage: {
+      dir: config.storage.dir.startsWith(homedir())
+        ? `~/${config.storage.dir.slice(homedir().length + 1).replace(/\\/g, "/")}`
+        : config.storage.dir,
+    },
+  };
+  await writeFile(path, stringifyYaml(toWrite), "utf8");
+  return path;
+}
+
+export async function setConfigMode(
+  mode: "warn" | "enforce",
+  configPath?: string,
+): Promise<TokenOptConfig> {
+  const path = configPath ?? getConfigPath();
+  const current = await loadConfig(path);
+  const next: TokenOptConfig = {
+    ...current,
+    behavior: {
+      ...current.behavior,
+      mode,
+    },
+  };
+  await saveConfig(next, path);
+  return next;
 }

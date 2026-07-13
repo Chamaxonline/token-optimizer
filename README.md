@@ -7,6 +7,7 @@ Local CLI to scan and optimize token usage when using **Cursor** and **Claude Co
 - **v0.1 — PR #1:** Static scanner (`token-opt scan`)
 - **v0.2 — PR #2:** Session hooks + event store + `token-opt report`
 - **v0.3 — PR #3:** Warn policies + duplicate-read detection
+- **v0.4 — PR #4:** Enforce mode + Claude Code hooks
 
 ## Requirements
 
@@ -27,43 +28,54 @@ pnpm build
 pnpm token-opt scan
 pnpm token-opt scan --path examples/sample-repo --json
 
-# Install Cursor hooks in a project
+# Install hooks (both Cursor + Claude by default)
 pnpm token-opt init
-pnpm token-opt init --path /path/to/your/project
+pnpm token-opt init --cursor          # Cursor only
+pnpm token-opt init --claude          # Claude Code only
+pnpm token-opt init --path /path/to/project
 
-# After using Cursor Agent, view session report
+# Switch policy mode
+pnpm token-opt config show
+pnpm token-opt config set mode enforce
+pnpm token-opt config set mode warn
+
+# After agent sessions
 pnpm token-opt report
-pnpm token-opt report --last 5
-pnpm token-opt report --json
-pnpm token-opt report --export csv > sessions.csv
+pnpm token-opt report --last 5 --json
 
 # Check installation
 pnpm token-opt status
 pnpm token-opt doctor
 ```
 
+## Modes
+
+| Mode | Behavior |
+|------|----------|
+| `warn` (default) | Log + warn; never block or truncate |
+| `enforce` | Truncate over-budget tool output; block duplicate reads; save full output to `~/.token-optimizer/artifacts/` |
+
 ## What gets tracked
 
-Cursor hooks (installed via `token-opt init`) log to `~/.token-optimizer/`:
+Hooks log to `~/.token-optimizer/` for both Cursor and Claude Code:
 
-| Event | Hook | Logged data |
-|-------|------|-------------|
-| Session start | `sessionStart` | workspace, timestamp |
-| Tool use | `postToolUse` | tool name, output size, budget warnings |
-| Duplicate read | `preToolUse` (Read) | warns when same file read within TTL |
-| Large files in prompt | `beforeSubmitPrompt` | warns on @-references to files >500 lines |
-| Context compaction | `preCompact` | compaction events |
-| Session end | `sessionEnd` | summary report |
-
-**Mode:** `warn` by default — hooks log and warn but never block agent work.
+| Event | Cursor | Claude Code | Logged data |
+|-------|--------|-------------|-------------|
+| Session start | `sessionStart` | `SessionStart` | workspace, timestamp |
+| Tool use | `postToolUse` | `PostToolUse` | tool name, output size, budget policy |
+| Duplicate read | `preToolUse` (Read) | `PreToolUse` (Read) | warn or deny within TTL |
+| Large files in prompt | `beforeSubmitPrompt` | `UserPromptSubmit` | warn on large @-files |
+| Compaction | `preCompact` | `PreCompact` | compaction events |
+| Session end | `sessionEnd` | `SessionEnd` | summary report |
 
 ## Monorepo layout
 
 ```
 packages/
-  core/           # tokenizer, static analyzer, event store, reporter
+  core/           # tokenizer, policies, event store, artifacts
   cli/            # token-opt CLI
   cursor-hooks/   # Cursor hook handlers
+  claude-hooks/   # Claude Code hook handlers
 ```
 
 ## Roadmap
@@ -71,7 +83,7 @@ packages/
 - [x] PR #1: `token-opt scan`
 - [x] PR #2: Session hooks + `token-opt report`
 - [x] PR #3: Warn policies + duplicate-read detection
-- [ ] PR #4: Enforce mode + Claude hooks
+- [x] PR #4: Enforce mode + Claude hooks
 
 ## License
 

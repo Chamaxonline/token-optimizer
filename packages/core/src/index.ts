@@ -3,11 +3,14 @@ export { scanStaticContext } from "./static-analyzer.js";
 export {
   loadConfig,
   saveDefaultConfig,
+  saveConfig,
+  setConfigMode,
   getConfigPath,
   ensureStorageDirs,
   getSessionsDir,
   getSummariesDir,
   getStateDir,
+  getArtifactsDir,
   DEFAULT_CONFIG,
 } from "./config.js";
 export {
@@ -28,6 +31,7 @@ export {
   extractWorkspaceRoot,
   evaluateToolOutput,
   policyToHookPermission,
+  normalizeToolName,
 } from "./hook-utils.js";
 export {
   evaluateToolOutputPolicy,
@@ -44,6 +48,11 @@ export {
   checkDuplicateRead,
   clearSessionState,
 } from "./read-tracker.js";
+export {
+  saveToolArtifact,
+  formatTruncationNotice,
+  getSessionArtifactsDir,
+} from "./artifacts.js";
 export type {
   ScanCategory,
   ScanOptions,
