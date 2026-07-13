@@ -12,7 +12,7 @@ import {
   recordRead,
   saveToolArtifact,
 } from "@token-opt/core/session";
-import { runHook } from "./lib/hook-io.js";
+import { claudeHookOutput, runHook } from "./lib/hook-io.js";
 
 function toolDetail(toolInput: unknown): string {
   if (typeof toolInput === "string") return toolInput;
@@ -43,7 +43,10 @@ await runHook(async (input) => {
     outputChars: policy.outputChars,
     estimatedTokens: policy.estimatedTokens,
     warning: policy.message,
-    metadata: policy.flag ? { flag: policy.flag } : undefined,
+    metadata: {
+      source: "claude",
+      ...(policy.flag ? { flag: policy.flag } : {}),
+    },
   });
 
   if (tool.toLowerCase().includes("read")) {
@@ -52,9 +55,9 @@ await runHook(async (input) => {
   }
 
   if (policy.action === "warn") {
-    return {
-      additional_context: policy.agentMessage ?? `[token-opt] ${policy.message}`,
-    };
+    return claudeHookOutput("PostToolUse", {
+      additionalContext: policy.agentMessage ?? `[token-opt] ${policy.message}`,
+    });
   }
 
   if (policy.action === "truncate" && policy.truncatedOutput !== undefined) {
@@ -63,16 +66,11 @@ await runHook(async (input) => {
       policy.agentMessage ?? `[token-opt] ${policy.message}`,
       artifactPath,
     );
-    const toolLower = tool.toLowerCase();
-    if (toolLower.includes("mcp")) {
-      return {
-        updated_mcp_tool_output: policy.truncatedOutput,
-        additional_context: notice,
-      };
-    }
-    return {
-      additional_context: `${notice}\n\n[truncated output]\n${policy.truncatedOutput}`,
-    };
+
+    return claudeHookOutput("PostToolUse", {
+      additionalContext: notice,
+      updatedToolOutput: policy.truncatedOutput,
+    });
   }
 
   return {};

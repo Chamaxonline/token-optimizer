@@ -9,6 +9,7 @@ function toolBudgetChars(tool: string, config: TokenOptConfig): number {
   if (name.includes("mcp")) {
     return config.budgets.mcp_output_chars;
   }
+  // Cursor Shell + Claude Bash share the shell budget
   return config.budgets.shell_output_chars;
 }
 

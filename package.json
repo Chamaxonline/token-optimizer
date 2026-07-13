@@ -1,7 +1,7 @@
 {
   "name": "token-optimizer",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Local CLI to scan and optimize token usage in Cursor and Claude Code",
   "scripts": {
     "build": "pnpm -r build",
@@ -17,7 +17,8 @@
   "packageManager": "pnpm@9.15.0",
   "dependencies": {
     "@token-opt/cli": "workspace:*",
-    "@token-opt/cursor-hooks": "workspace:*"
+    "@token-opt/cursor-hooks": "workspace:*",
+    "@token-opt/claude-hooks": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
