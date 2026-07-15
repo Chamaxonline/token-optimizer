@@ -2,6 +2,12 @@
 
 Local CLI to scan and optimize token usage when using **Cursor** and **Claude Code**.
 
+See where agents burn tokens, catch duplicate reads and over-budget tool output, then reclaim waste with warn or enforce mode — all on your machine.
+
+![token-opt local dashboard](docs/dashboard.png)
+
+*Local dashboard — session list, heaviest tools, and projected savings. Run `token-opt dashboard`.*
+
 ## Status
 
 - **v0.1 — PR #1:** Static scanner (`token-opt scan`)
