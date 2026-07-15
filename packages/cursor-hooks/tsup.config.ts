@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+﻿import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: {
@@ -9,8 +9,13 @@ export default defineConfig({
     "before-submit-prompt": "src/before-submit-prompt.ts",
     "pre-compact": "src/pre-compact.ts",
   },
-  format: ["esm"],
+  format: ["cjs"],
+  platform: "node",
+  target: "node20",
   clean: true,
   splitting: false,
-  noExternal: [/@token-opt\/.*/],
+  noExternal: [/@token-opt\/.*/, "yaml", "zod", "js-tiktoken", "fast-glob"],
+  outExtension() {
+    return { js: ".js" };
+  },
 });

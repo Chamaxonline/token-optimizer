@@ -1,20 +1,22 @@
-{
-  "name": "@token-opt/claude-hooks",
-  "version": "0.1.0",
-  "description": "Claude Code hook handlers for token-optimizer",
-  "type": "module",
-  "files": ["dist", "settings.hooks.json"],
-  "scripts": {
-    "build": "tsup",
-    "typecheck": "tsc --noEmit",
-    "dev": "tsup --watch"
-  },
-  "dependencies": {
-    "@token-opt/core": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "^22.13.10",
-    "tsup": "^8.4.0",
-    "typescript": "^5.8.2"
-  }
+﻿{
+    "name":  "@token-opt/claude-hooks",
+    "version":  "0.1.0",
+    "description":  "Claude Code hook handlers for token-optimizer",
+    "files":  [
+                  "dist",
+                  "settings.hooks.json"
+              ],
+    "scripts":  {
+                    "build":  "tsup",
+                    "typecheck":  "tsc --noEmit",
+                    "dev":  "tsup --watch"
+                },
+    "dependencies":  {
+                         "@token-opt/core":  "workspace:*"
+                     },
+    "devDependencies":  {
+                            "@types/node":  "^22.13.10",
+                            "tsup":  "^8.4.0",
+                            "typescript":  "^5.8.2"
+                        }
 }
