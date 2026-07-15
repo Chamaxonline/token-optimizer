@@ -8,10 +8,28 @@ export async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
+/** Cursor may prepend BOM / invisible bytes before the JSON payload. */
+export function parseHookJson<T extends Record<string, unknown>>(raw: string): T {
+  let text = raw.replace(/^\uFEFF/, "").trim();
+  if (!text) return {} as T;
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      return JSON.parse(text.slice(start, end + 1)) as T;
+    }
+    throw new SyntaxError(
+      `Unexpected token in hook stdin (len=${raw.length}, first=${JSON.stringify(raw.slice(0, 8))})`,
+    );
+  }
+}
+
 export async function readHookInput<T extends Record<string, unknown>>(): Promise<T> {
   const raw = await readStdin();
-  if (!raw.trim()) return {} as T;
-  return JSON.parse(raw) as T;
+  return parseHookJson<T>(raw);
 }
 
 export function writeHookOutput(output: Record<string, unknown>): void {
