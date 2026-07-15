@@ -9,8 +9,13 @@ export default defineConfig({
     "user-prompt-submit": "src/user-prompt-submit.ts",
     "pre-compact": "src/pre-compact.ts",
   },
-  format: ["esm"],
+  format: ["cjs"],
+  platform: "node",
+  target: "node20",
   clean: true,
   splitting: false,
-  noExternal: [/@token-opt\/.*/],
+  noExternal: [/@token-opt\/.*/, "yaml", "zod", "js-tiktoken", "fast-glob"],
+  outExtension() {
+    return { js: ".js" };
+  },
 });

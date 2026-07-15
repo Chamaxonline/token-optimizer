@@ -9,7 +9,7 @@ import {
 } from "@token-opt/core/session";
 import { claudeHookOutput, runHook } from "./lib/hook-io.js";
 
-await runHook(async (input) => {
+void runHook(async (input) => {
   const config = await loadConfig();
   const prompt = extractPromptText(input);
   if (!prompt) return {};

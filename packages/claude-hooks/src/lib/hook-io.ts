@@ -27,8 +27,14 @@ export async function runHook(
     if (output && Object.keys(output).length > 0) {
       writeHookOutput(output);
     }
-  } catch {
+  } catch (err) {
     // Fail open — never block agent work due to token-opt errors
+    const message = err instanceof Error ? err.stack ?? err.message : String(err);
+    try {
+      process.stderr.write(`[token-opt] hook error: ${message}\n`);
+    } catch {
+      // ignore
+    }
     process.exit(0);
   }
 }

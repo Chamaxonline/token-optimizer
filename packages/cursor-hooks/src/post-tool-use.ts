@@ -27,7 +27,7 @@ function toolDetail(toolInput: unknown): string {
   );
 }
 
-await runHook(async (input) => {
+void runHook(async (input) => {
   const sessionId = extractSessionId(input);
   const tool = normalizeToolName(extractToolName(input));
   const output = extractToolOutput(input);
