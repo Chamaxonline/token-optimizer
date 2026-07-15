@@ -4,13 +4,14 @@ import { runReport } from "./commands/report.js";
 import { runInit } from "./commands/init.js";
 import { runStatus, runDoctor } from "./commands/status.js";
 import { runConfigSetMode, runConfigShow } from "./commands/config.js";
+import { runDashboard } from "./commands/dashboard.js";
 
 const program = new Command();
 
 program
   .name("token-opt")
   .description("Scan and optimize token usage for Cursor and Claude Code")
-  .version("0.4.0");
+  .version("0.5.0");
 
 program
   .command("scan")
@@ -137,6 +138,27 @@ program
   .option("-p, --path <dir>", "Project directory", process.cwd())
   .action(async (options) => {
     await runDoctor(options.path);
+  });
+
+
+program
+  .command("dashboard")
+  .description("Open a local dashboard for session token reports")
+  .option("--port <n>", "Port to listen on", (v) => Number(v), 3847)
+  .option("--host <host>", "Host to bind", "127.0.0.1")
+  .option("--no-open", "Do not open a browser window")
+  .action(async (options) => {
+    try {
+      await runDashboard({
+        port: options.port,
+        host: options.host,
+        open: options.open,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`token-opt dashboard failed: ${message}`);
+      process.exitCode = 1;
+    }
   });
 
 program.parseAsync(process.argv);

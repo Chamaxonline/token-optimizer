@@ -1,6 +1,12 @@
-# token-optimizer
+﻿# token-optimizer
 
 Local CLI to scan and optimize token usage when using **Cursor** and **Claude Code**.
+
+See where agents burn tokens, catch duplicate reads and over-budget tool output, then reclaim waste with warn or enforce mode — all on your machine.
+
+![token-opt local dashboard](docs/dashboard.png)
+
+*Local dashboard — session list, heaviest tools, and projected savings. Run `token-opt dashboard`.*
 
 ## Status
 
@@ -8,6 +14,7 @@ Local CLI to scan and optimize token usage when using **Cursor** and **Claude Co
 - **v0.2 — PR #2:** Session hooks + event store + `token-opt report`
 - **v0.3 — PR #3:** Warn policies + duplicate-read detection
 - **v0.4 — PR #4:** Enforce mode + Claude Code hooks
+- **v0.5:** Local dashboard (`token-opt dashboard`)
 
 ## Requirements
 
@@ -43,6 +50,10 @@ pnpm token-opt config set mode warn
 pnpm token-opt report
 pnpm token-opt report --last 5 --json
 
+# Local dashboard (session list + detail, auto-refresh)
+pnpm token-opt dashboard
+pnpm token-opt dashboard --port 4000 --no-open
+
 # Check installation
 pnpm token-opt status
 pnpm token-opt doctor
@@ -73,7 +84,7 @@ Hooks log to `~/.token-optimizer/` for both Cursor and Claude Code:
 ```
 packages/
   core/           # tokenizer, policies, event store, artifacts
-  cli/            # token-opt CLI
+  cli/            # token-opt CLI + local dashboard
   cursor-hooks/   # Cursor hook handlers
   claude-hooks/   # Claude Code hook handlers
 ```
@@ -84,6 +95,7 @@ packages/
 - [x] PR #2: Session hooks + `token-opt report`
 - [x] PR #3: Warn policies + duplicate-read detection
 - [x] PR #4: Enforce mode + Claude hooks
+- [x] Local dashboard (`token-opt dashboard`)
 
 ## License
 
